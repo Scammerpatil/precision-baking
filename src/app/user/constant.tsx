@@ -24,16 +24,11 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     path: "/user/convert-measurements",
     icon: <IconCalculator width="24" height="24" />,
   },
-  {
-    title: "Saved Conversions",
-    path: "/user/saved-conversions",
-    icon: <IconClipboardCheck width="24" height="24" />,
-  },
-  {
-    title: "Profile",
-    path: "/user/profile",
-    icon: <IconUser width="24" height="24" />,
-  },
+  // {
+  //   title: "Saved Conversions",
+  //   path: "/user/saved-conversions",
+  //   icon: <IconClipboardCheck width="24" height="24" />,
+  // },
   {
     title: "About",
     path: "/user/about",

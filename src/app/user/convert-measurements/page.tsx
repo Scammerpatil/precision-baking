@@ -3,9 +3,16 @@ import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+export interface RecipeData {
+  quantity: number;
+  unit: string;
+  ingredient: string;
+  grams: number;
+}
+
 const ConvertMeasurement = () => {
   const [recipe, setRecipe] = useState<string>("");
-  const [response, setResponse] = useState<string>("");
+  const [response, setResponse] = useState<RecipeData[]>();
 
   const handleUpload = async () => {
     try {
@@ -13,12 +20,12 @@ const ConvertMeasurement = () => {
 
       toast.promise(res, {
         loading: "Converting the recipe...",
-        success: "Recipe Converted!!!",
+        success: (data) => {
+          setResponse(data.data.recipe);
+          return "Recipe converted successfully!";
+        },
         error: "Something went wrong!!!",
       });
-
-      const { data } = await res;
-      setResponse(data.recipe || "No response received.");
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Something went wrong!!!");
     }
@@ -46,11 +53,26 @@ const ConvertMeasurement = () => {
         </button>
 
         {response && (
-          <div className="bg-base-300 p-4 rounded-lg shadow-md mt-4">
+          <div className="bg-base-300 p-4 rounded-lg shadow-md mt-4 space-y-4">
             <h2 className="text-xl font-semibold mb-2">Converted Recipe:</h2>
-            <pre className="text-base-content whitespace-pre-wrap">
-              {response}
-            </pre>
+            {
+              <ul className="space-y-2">
+                {response.length === 0 && (
+                  <li className="p-4 bg-base-100 border border-base-200 rounded-lg shadow-sm">
+                    No ingredients found in the recipe.
+                  </li>
+                )}
+                {response.map((item, index) => (
+                  <li
+                    key={index}
+                    className="p-4 bg-base-100 border border-base-200 rounded-lg shadow-sm"
+                  >
+                    <span className="font-semibold">{item.quantity}</span>{" "}
+                    {item.unit} - {item.ingredient} - ({item.grams} grams)
+                  </li>
+                ))}
+              </ul>
+            }
           </div>
         )}
       </div>
