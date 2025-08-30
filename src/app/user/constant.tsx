@@ -6,6 +6,8 @@ import {
   IconClipboardCheck,
   IconUser,
   IconInfoCircle,
+  IconCamera,
+  IconKeyboard,
 } from "@tabler/icons-react";
 
 export const SIDENAV_ITEMS: SideNavItem[] = [
@@ -23,6 +25,16 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     title: "Convert Measurements",
     path: "/user/convert-measurements",
     icon: <IconCalculator width="24" height="24" />,
+  },
+  {
+    title: "Image Prediction",
+    path: "/user/predict/image",
+    icon: <IconCamera width="24" height="24" />,
+  },
+  {
+    title: "Text Prediction",
+    path: "/user/predict/text",
+    icon: <IconKeyboard width="24" height="24" />,
   },
   // {
   //   title: "Saved Conversions",

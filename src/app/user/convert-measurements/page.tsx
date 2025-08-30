@@ -31,6 +31,25 @@ const ConvertMeasurement = () => {
     }
   };
 
+  const handleSaveRecipe = async () => {
+    const recipeName = prompt("Enter a name for your recipe:");
+    if (!recipeName) return;
+
+    try {
+      const res = axios.post("/api/saved-recipes", {
+        recipe: JSON.stringify(response),
+        name: recipeName,
+      });
+      toast.promise(res, {
+        loading: "Saving recipe...",
+        success: "Recipe saved successfully!",
+        error: "Something went wrong!!!",
+      });
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Something went wrong!!!");
+    }
+  };
+
   return (
     <>
       <h1 className="text-4xl font-bold mb-6 text-center uppercase">
@@ -65,7 +84,7 @@ const ConvertMeasurement = () => {
                 {response.map((item, index) => (
                   <li
                     key={index}
-                    className="p-4 bg-base-100 border border-base-200 rounded-lg shadow-sm"
+                    className="p-4 bg-base-100 border border-base-200 rounded-lg shadow-sm capitalize"
                   >
                     <span className="font-semibold">{item.quantity}</span>{" "}
                     {item.unit} - {item.ingredient} - ({item.grams} grams)
@@ -73,6 +92,14 @@ const ConvertMeasurement = () => {
                 ))}
               </ul>
             }
+            <div className="mt-4">
+              <button
+                className="btn btn-accent w-full"
+                onClick={handleSaveRecipe}
+              >
+                Save Recipe
+              </button>
+            </div>
           </div>
         )}
       </div>
