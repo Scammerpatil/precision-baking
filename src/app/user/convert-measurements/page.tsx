@@ -55,14 +55,15 @@ const ConvertMeasurement = () => {
       <h1 className="text-4xl font-bold mb-6 text-center uppercase">
         Convert To Bake Precisely
       </h1>
-      <div className="max-w-lg mx-auto space-y-4">
+      <div className="max-w-6xl mx-auto space-y-4">
         <fieldset className="fieldset">
-          <legend className="fieldset-legend">
-            Upload The Recipe<span className="text-area-error">*</span>
+          <legend className="fieldset-legend text-base font-bold">
+            Upload The Recipe<span className="text-error">*</span>
           </legend>
           <textarea
-            className="textarea textarea-primary w-full h-56"
+            className="textarea textarea-primary w-full"
             placeholder="Upload the Recipe"
+            rows={4}
             value={recipe}
             onChange={(e) => setRecipe(e.target.value)}
           />

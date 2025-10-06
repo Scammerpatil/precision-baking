@@ -41,15 +41,20 @@ const PredictFromImage = () => {
         Predict Dish From Text
       </h1>
 
-      <div className="max-w-xl mx-auto space-y-4">
+      <div className="max-w-6xl mx-auto space-y-4">
         <div className="flex flex-col gap-2">
-          <textarea
-            className="textarea textarea-lg w-full border border-dotted"
-            placeholder="Enter dish name or ingredients..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            rows={4}
-          />
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend text-base font-bold">
+              Enter dish name/ingredients<span className="text-error">*</span>
+            </legend>
+            <textarea
+              className="textarea textarea-primary w-full border border-dotted"
+              placeholder="Enter dish name or ingredients..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows={2}
+            />
+          </fieldset>
           <button className="btn btn-primary w-full" onClick={handleSubmit}>
             <IconClipboardText className="mr-2" /> Predict
           </button>

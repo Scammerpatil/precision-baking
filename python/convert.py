@@ -82,25 +82,37 @@ def fraction_to_decimal(text):
     return text
 
 def parse_ingredient(ingredient_text):
-    ingredient_text = fraction_to_decimal(ingredient_text)
+    ingredient_text = fraction_to_decimal(ingredient_text).strip()
 
-    # Regex to parse quantity, unit, ingredient
-    pattern = r"^(\d+\s\d+/\d+|\d+/\d+|\d+(\.\d+)?)?\s*(cup|cups|teaspoon|teaspoons|tbsp|tablespoon|large|ml|g)?\s*(.+)"
+    # Updated regex patterns (now match quantities anywhere in the string)
+    range_pattern = r"(\d+\s*-\s*\d+|\d+-\d+)\s*(cup|cups|tbsp|tablespoon|teaspoon|teaspoons|large|ml|g)?"
+    quantity_pattern = r"(\d+\s\d+/\d+|\d+/\d+|\d+(\.\d+)?)\s*(cup|cups|tbsp|tablespoon|teaspoon|teaspoons|large|ml|g)?"
 
-    match = re.match(pattern, ingredient_text.strip())
+    # Normalize by removing parentheses and extra symbols
+    text = re.sub(r"[\(\)\:,]", "", ingredient_text)
 
+    # Try to find a range first (e.g., "3-4 tablespoons")
+    match_range = re.search(range_pattern, text)
+    if match_range:
+        quantity_range = match_range.group(1)
+        unit = match_range.group(2)
+        start, end = re.split(r"[-–]", quantity_range)
+        average_quantity = (float(start) + float(end)) / 2
+        ingredient = re.sub(range_pattern, "", text).strip()
+        return {"quantity": average_quantity, "unit": unit, "ingredient": ingredient}
+
+    # Then try to find a single quantity (e.g., "½ teaspoon", "1 cup")
+    match = re.search(quantity_pattern, text)
     if match:
-        quantity_str, _, unit, ingredient = match.groups()
+        quantity_str, _, unit = match.groups()
         try:
-            if quantity_str:
-                quantity = float(sum(Fraction(part) for part in quantity_str.split()))
-            else:
-                quantity = None
-        except:
+            quantity = float(sum(Fraction(part) for part in quantity_str.split()))
+        except Exception:
             quantity = None
-
+        ingredient = re.sub(quantity_pattern, "", text).strip()
         return {"quantity": quantity, "unit": unit, "ingredient": ingredient}
 
+    # If no quantity found, fallback
     return {"quantity": None, "unit": None, "ingredient": ingredient_text}
 
 if __name__ == "__main__":

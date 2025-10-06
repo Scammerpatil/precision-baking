@@ -41,26 +41,34 @@ const IngredientList = () => {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-
-      {filtered.length === 0 ? (
-        <p className="text-center text-base-content/70 uppercase text-4xl">
-          No results found.
-        </p>
-      ) : (
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filtered.map((item, index) => (
-            <li
-              key={index}
-              className="p-4 bg-base-200 rounded-lg shadow-sm border border-base-300"
-            >
-              <h2 className="text-lg font-semibold">{item.food}</h2>
-              <p className="text-sm text-base-content/80">
-                Density: {item.density} g/ml
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="overflow-x-auto bg-base-300">
+        <table className="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Ingredient</th>
+              <th>Density (g/ml)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length > 0 ? (
+              filtered.map((item, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{item.food}</td>
+                  <td>{item.density}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={3} className="text-center">
+                  No ingredients found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 };
