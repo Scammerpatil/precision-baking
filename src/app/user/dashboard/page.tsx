@@ -1,4 +1,6 @@
 "use client";
+import Title from "@/components/Title";
+import { useUser } from "@/context/AuthProvider";
 import {
   IconScale,
   IconList,
@@ -20,6 +22,7 @@ import {
 } from "recharts";
 
 export default function Dashboard() {
+  const { user } = useUser();
   const [chartData, setChartData] = useState<
     { month: string; conversions: number; saved: number }[]
   >([]);
@@ -68,138 +71,140 @@ export default function Dashboard() {
 
   return (
     <>
-      <h1 className="text-4xl font-bold mb-6 text-center uppercase">
-        Precision Baking Dashboard
-      </h1>
+      <Title title={`Welcome, ${user?.name}`} />
+      <div className="px-10 min-h-[calc(100vh-5.6rem)]">
+        {/* Stat Cards */}
+        <div className="stats shadow w-full bg-base-300 mb-10">
+          <div className="stat">
+            <div className="stat-figure text-primary">
+              <IconScale size={40} />
+            </div>
+            <div className="stat-title">Total Conversions</div>
+            <div className="stat-value text-primary">
+              {dashboardData.totalConversions}
+            </div>
+            <div className="stat-desc">15% more than last month</div>
+          </div>
 
-      {/* Stat Cards */}
-      <div className="stats shadow w-full bg-base-300 mb-10">
-        <div className="stat">
-          <div className="stat-figure text-primary">
-            <IconScale size={40} />
+          <div className="stat">
+            <div className="stat-figure text-secondary">
+              <IconList size={40} />
+            </div>
+            <div className="stat-title">Ingredients Tracked</div>
+            <div className="stat-value text-secondary">
+              {dashboardData.ingredientsTracked}
+            </div>
+            <div className="stat-desc">Growing database of ingredients</div>
           </div>
-          <div className="stat-title">Total Conversions</div>
-          <div className="stat-value text-primary">
-            {dashboardData.totalConversions}
+
+          <div className="stat">
+            <div className="stat-figure text-accent">
+              <IconCalculator size={40} />
+            </div>
+            <div className="stat-title">Recent Conversions</div>
+            <div className="stat-value text-accent">
+              {dashboardData.recentConversions}
+            </div>
+            <div className="stat-desc">Updated regularly</div>
           </div>
-          <div className="stat-desc">15% more than last month</div>
+
+          <div className="stat">
+            <div className="stat-figure text-success">
+              <IconClipboardCheck size={40} />
+            </div>
+            <div className="stat-title">Saved Recipes</div>
+            <div className="stat-value text-success">
+              {dashboardData.savedRecipes}
+            </div>
+            <div className="stat-desc">Keep track of your conversions</div>
+          </div>
         </div>
 
-        <div className="stat">
-          <div className="stat-figure text-secondary">
-            <IconList size={40} />
-          </div>
-          <div className="stat-title">Ingredients Tracked</div>
-          <div className="stat-value text-secondary">
-            {dashboardData.ingredientsTracked}
-          </div>
-          <div className="stat-desc">Growing database of ingredients</div>
+        {/* Chart Section */}
+        <div className="bg-base-200 shadow rounded-2xl p-6 mb-10">
+          <h2 className="text-2xl font-bold mb-4 uppercase text-center">
+            Conversions vs Saved Recipes
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="conversions"
+                stroke="#3b82f6"
+                strokeWidth={3}
+              />
+              <Line
+                type="monotone"
+                dataKey="saved"
+                stroke="#22c55e"
+                strokeWidth={3}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
 
-        <div className="stat">
-          <div className="stat-figure text-accent">
-            <IconCalculator size={40} />
-          </div>
-          <div className="stat-title">Recent Conversions</div>
-          <div className="stat-value text-accent">
-            {dashboardData.recentConversions}
-          </div>
-          <div className="stat-desc">Updated regularly</div>
-        </div>
-
-        <div className="stat">
-          <div className="stat-figure text-success">
-            <IconClipboardCheck size={40} />
-          </div>
-          <div className="stat-title">Saved Recipes</div>
-          <div className="stat-value text-success">
-            {dashboardData.savedRecipes}
-          </div>
-          <div className="stat-desc">Keep track of your conversions</div>
-        </div>
-      </div>
-
-      {/* Chart Section */}
-      <div className="bg-base-200 shadow rounded-2xl p-6 mb-10">
-        <h2 className="text-2xl font-bold mb-4 uppercase text-center">
-          Conversions vs Saved Recipes
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="conversions"
-              stroke="#3b82f6"
-              strokeWidth={3}
-            />
-            <Line
-              type="monotone"
-              dataKey="saved"
-              stroke="#22c55e"
-              strokeWidth={3}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Saved Recipes Table */}
-      <div className="bg-base-200 shadow rounded-2xl p-6">
-        <h2 className="text-2xl font-bold mb-4 text-center uppercase">
-          Saved Recipes
-        </h2>
-        <div className="overflow-x-auto">
-          <table className="table table-zebra bg-base-300 w-full">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Recipe Name</th>
-                <th>Conversions</th>
-                <th>Date Saved</th>
-                <th>Actions</th>
-                <th>View</th>
-              </tr>
-            </thead>
-            <tbody>
-              {savedRecipes.length > 0 ? (
-                savedRecipes.map((recipe, index: number) => (
-                  <tr key={recipe._id}>
-                    <td>{index + 1}</td>
-                    <td>{recipe.name}</td>
-                    <td>{JSON.parse(recipe.recipe).length}</td>
-                    <td>{new Date(recipe.createdAt).toLocaleDateString()}</td>
-                    <td>
-                      <button
-                        className="btn btn-sm btn-error"
-                        onClick={() => handleDelete(recipe._id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                    <td>
-                      <a
-                        href={`/user/recipes?id=${recipe._id}`}
-                        aria-label={`View recipe ${recipe.name}`}
-                        className="btn btn-sm btn-info"
-                      >
-                        View
-                      </a>
+        {/* Saved Recipes Table */}
+        <div className="bg-base-200 shadow rounded-2xl p-6">
+          <h2 className="text-2xl font-bold mb-4 text-center uppercase">
+            Saved Recipes
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="table table-zebra bg-base-300 w-full">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Recipe Name</th>
+                  <th>Conversions</th>
+                  <th>Date Saved</th>
+                  <th>Actions</th>
+                  <th>View</th>
+                </tr>
+              </thead>
+              <tbody>
+                {savedRecipes.length > 0 ? (
+                  savedRecipes.map((recipe, index: number) => (
+                    <tr key={recipe._id}>
+                      <td>{index + 1}</td>
+                      <td>{recipe.name}</td>
+                      <td>{JSON.parse(recipe.recipe).length}</td>
+                      <td>{new Date(recipe.createdAt).toLocaleDateString()}</td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-error"
+                          onClick={() => handleDelete(recipe._id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                      <td>
+                        <a
+                          href={`/user/recipes?id=${recipe._id}`}
+                          aria-label={`View recipe ${recipe.name}`}
+                          className="btn btn-sm btn-info"
+                        >
+                          View
+                        </a>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={4}
+                      className="text-center text-base-content/60"
+                    >
+                      No saved recipes yet.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="text-center text-base-content/60">
-                    No saved recipes yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </>

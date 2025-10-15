@@ -4,7 +4,7 @@ import { IconMail, IconMapPin, IconPhone } from "@tabler/icons-react";
 
 const Contact = () => {
   return (
-    <div className="mx-auto px-10 py-12 bg-base-200">
+    <div className="mx-auto px-10 py-12 bg-base-200 h-[calc(100vh-5.6rem)]">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-primary">Contact Us</h1>
         <p className="text-lg text-base-content/70 mt-3">

@@ -47,7 +47,7 @@ const Header = () => {
           <Link href="/login" className="btn btn-accent">
             Login
           </Link>
-          <Link href="/signup" className="btn btn-accent">
+          <Link href="/signup" className="btn btn-accent btn-outline">
             Sign Up
           </Link>
           <ThemeToggler />

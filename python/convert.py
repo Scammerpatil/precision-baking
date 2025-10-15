@@ -17,11 +17,11 @@ nlp = spacy.load("en_core_web_sm")
 density_df = pd.read_csv("python/density_data.csv")
 density_map = {row["food"].lower(): row["density"] for _, row in density_df.iterrows()}
 
-
 unit_to_ml = {
     "cup": 240,
     "cups": 240,
     "tbsp": 15,
+    "tsp": 5,
     "tablespoon": 15,
     "teaspoon": 5,
     "teaspoons": 5,
@@ -47,8 +47,6 @@ def get_density(ingredient_name):
     if not match:
         match = get_close_matches(ingredient_name, density_map.keys(), n=1, cutoff=0.01)
     if not match:
-        match = get_close_matches(ingredient_name, density_map.keys(), n=1, cutoff=0.001)
-    if not match:
         match = get_close_matches(ingredient_name, density_map.keys(), n=1, cutoff=0.0001)
     if not match:
         match = get_close_matches(ingredient_name, density_map.keys(), n=1, cutoff=0.00001)
@@ -72,48 +70,84 @@ def convert_to_grams(quantity, unit, ingredient_name):
     if ml_factor is not None and density is not None:
         grams = quantity * ml_factor * density
         return round(grams, 2)
+    elif ml_factor is not None:  # In case no density is found
+        print(f"Warning: No density found for {ingredient_name}. Using volume-based conversion.")
+        grams = quantity * ml_factor  # Fall back to volume * ml_factor if density isn't available
+        return round(grams, 2)
 
-    return None  # unable to convert
+    return None  # Unable to convert
 
 def fraction_to_decimal(text):
-    unicode_fractions = {"½": "1/2", "¼": "1/4", "¾": "3/4", "⅓": "1/3", "⅔": "2/3"}
+    unicode_fractions = {"½": "1/2", "¼": "1/4", "¾": "3/4", "⅓": "1/3", "⅔": "2/3" , "⅛": "1/8", "⅜": "3/8", "⅝": "5/8", "⅞": "7/8"}
     for uni_frac, ascii_frac in unicode_fractions.items():
         text = text.replace(uni_frac, ascii_frac)
     return text
 
-def parse_ingredient(ingredient_text):
+def parse_ingredient(ingredient_text, default_quantity_if_unit_only=None):
+    """
+    Parse an ingredient line.
+    - If a quantity exists but unit was not immediately adjacent, search for unit anywhere.
+    - If no quantity but a unit exists, capture the unit (and optionally set a default quantity).
+    - default_quantity_if_unit_only: if set to numeric (e.g., 1), use that when only unit is present.
+    """
     ingredient_text = fraction_to_decimal(ingredient_text).strip()
 
-    # Updated regex patterns (now match quantities anywhere in the string)
-    range_pattern = r"(\d+\s*-\s*\d+|\d+-\d+)\s*(cup|cups|tbsp|tablespoon|teaspoon|teaspoons|large|ml|g)?"
-    quantity_pattern = r"(\d+\s\d+/\d+|\d+/\d+|\d+(\.\d+)?)\s*(cup|cups|tbsp|tablespoon|teaspoon|teaspoons|large|ml|g)?"
+    # Patterns: match ranges, quantities (including fractions), and units
+    range_pattern = r"(\d+\s*[-–]\s*\d+)\s*(cup|cups|tbsp|tablespoon|tablespoons|tbsp?s?|teaspoon|teaspoons|tsp|large|ml|g)?"
+    quantity_pattern = r"(\d+\s\d+/\d+|\d+/\d+|\d+(\.\d+)?)\s*(cup|cups|tbsp|tablespoon|tablespoons|tbsp?s?|teaspoon|teaspoons|tsp|large|ml|g)?"
+    unit_search_pattern = r"\b(cup|cups|tbsp|tablespoon|tablespoons|tbsp?s?|teaspoon|teaspoons|tsp|large|ml|g)\b"
 
     # Normalize by removing parentheses and extra symbols
     text = re.sub(r"[\(\)\:,]", "", ingredient_text)
 
-    # Try to find a range first (e.g., "3-4 tablespoons")
-    match_range = re.search(range_pattern, text)
+    # Try range first
+    match_range = re.search(range_pattern, text, flags=re.IGNORECASE)
     if match_range:
         quantity_range = match_range.group(1)
         unit = match_range.group(2)
         start, end = re.split(r"[-–]", quantity_range)
-        average_quantity = (float(start) + float(end)) / 2
-        ingredient = re.sub(range_pattern, "", text).strip()
-        return {"quantity": average_quantity, "unit": unit, "ingredient": ingredient}
+        try:
+            average_quantity = (float(start.strip()) + float(end.strip())) / 2
+        except Exception:
+            average_quantity = None
+        ingredient = re.sub(range_pattern, "", text, flags=re.IGNORECASE).strip()
+        # If unit not right after range, look elsewhere
+        if not unit:
+            munit = re.search(unit_search_pattern, text, flags=re.IGNORECASE)
+            if munit:
+                unit = munit.group(1)
+        return {"quantity": average_quantity, "unit": unit.lower() if unit else None, "ingredient": ingredient}
 
-    # Then try to find a single quantity (e.g., "½ teaspoon", "1 cup")
-    match = re.search(quantity_pattern, text)
+    # Try single quantity
+    match = re.search(quantity_pattern, text, flags=re.IGNORECASE)
     if match:
-        quantity_str, _, unit = match.groups()
+        quantity_str = match.group(1)
+        unit = match.group(3)
         try:
             quantity = float(sum(Fraction(part) for part in quantity_str.split()))
         except Exception:
             quantity = None
-        ingredient = re.sub(quantity_pattern, "", text).strip()
-        return {"quantity": quantity, "unit": unit, "ingredient": ingredient}
+        ingredient = re.sub(quantity_pattern, "", text, flags=re.IGNORECASE).strip()
 
-    # If no quantity found, fallback
+        # If there was no unit immediately after the quantity, search the whole line for a unit
+        if not unit:
+            munit = re.search(unit_search_pattern, text, flags=re.IGNORECASE)
+            if munit:
+                unit = munit.group(1)
+
+        return {"quantity": quantity, "unit": unit.lower() if unit else None, "ingredient": ingredient}
+
+    # If no quantity found, try to find a unit anywhere (e.g., lines like "Mustard seeds rai – tsp")
+    munit = re.search(unit_search_pattern, text, flags=re.IGNORECASE)
+    if munit:
+        unit = munit.group(1).lower()
+        # Optionally set a default quantity when unit-only is present:
+        quantity = default_quantity_if_unit_only
+        return {"quantity": quantity, "unit": unit, "ingredient": re.sub(unit_search_pattern, "", text, flags=re.IGNORECASE).strip()}
+
+    # Fallback: no quantity or unit found
     return {"quantity": None, "unit": None, "ingredient": ingredient_text}
+
 
 if __name__ == "__main__":
 

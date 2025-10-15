@@ -1,12 +1,12 @@
 "use client";
 
+import Title from "@/components/Title";
+
 const AboutPage = () => {
   return (
     <>
-      <section className="max-w-4xl mx-auto space-y-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-center">
-          About Precision Baking
-        </h1>
+      <Title title="About Precision Baking" />
+      <div className="px-10 mx-auto space-y-10">
         <p className="text-lg text-center text-base-content max-w-2xl mx-auto">
           Welcome to your baking companion! This project is designed to help
           home bakers and professionals convert any recipe into precise,
@@ -47,7 +47,7 @@ const AboutPage = () => {
             </ul>
           </div>
         </div>
-      </section>
+      </div>
     </>
   );
 };

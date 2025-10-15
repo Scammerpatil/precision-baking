@@ -1,4 +1,5 @@
 "use client";
+import Title from "@/components/Title";
 import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -52,57 +53,57 @@ const ConvertMeasurement = () => {
 
   return (
     <>
-      <h1 className="text-4xl font-bold mb-6 text-center uppercase">
-        Convert To Bake Precisely
-      </h1>
-      <div className="max-w-6xl mx-auto space-y-4">
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend text-base font-bold">
-            Upload The Recipe<span className="text-error">*</span>
-          </legend>
-          <textarea
-            className="textarea textarea-primary w-full"
-            placeholder="Upload the Recipe"
-            rows={4}
-            value={recipe}
-            onChange={(e) => setRecipe(e.target.value)}
-          />
-        </fieldset>
-        <button className="btn btn-primary w-full" onClick={handleUpload}>
-          Upload The Recipe
-        </button>
+      <Title title="Convert Measurements" />
+      <div className="px-10">
+        <div className="max-w-6xl mx-auto space-y-4">
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend text-base font-bold">
+              Upload The Ingredients<span className="text-error">*</span>
+            </legend>
+            <textarea
+              className="textarea textarea-primary w-full"
+              placeholder="Upload the Ingredients here..."
+              rows={4}
+              value={recipe}
+              onChange={(e) => setRecipe(e.target.value)}
+            />
+          </fieldset>
+          <button className="btn btn-primary w-full" onClick={handleUpload}>
+            Convert Measurements
+          </button>
 
-        {response && (
-          <div className="bg-base-300 p-4 rounded-lg shadow-md mt-4 space-y-4">
-            <h2 className="text-xl font-semibold mb-2">Converted Recipe:</h2>
-            {
-              <ul className="space-y-2">
-                {response.length === 0 && (
-                  <li className="p-4 bg-base-100 border border-base-200 rounded-lg shadow-sm">
-                    No ingredients found in the recipe.
-                  </li>
-                )}
-                {response.map((item, index) => (
-                  <li
-                    key={index}
-                    className="p-4 bg-base-100 border border-base-200 rounded-lg shadow-sm capitalize"
-                  >
-                    <span className="font-semibold">{item.quantity}</span>{" "}
-                    {item.unit} - {item.ingredient} - ({item.grams} grams)
-                  </li>
-                ))}
-              </ul>
-            }
-            <div className="mt-4">
-              <button
-                className="btn btn-accent w-full"
-                onClick={handleSaveRecipe}
-              >
-                Save Recipe
-              </button>
+          {response && (
+            <div className="bg-base-300 p-4 rounded-lg shadow-md mt-4 space-y-4">
+              <h2 className="text-xl font-semibold mb-2">Converted Recipe:</h2>
+              {
+                <ul className="space-y-2">
+                  {response.length === 0 && (
+                    <li className="p-4 bg-base-100 border border-base-200 rounded-lg shadow-sm">
+                      No ingredients found in the recipe.
+                    </li>
+                  )}
+                  {response.map((item, index) => (
+                    <li
+                      key={index}
+                      className="p-4 bg-base-100 border border-base-200 rounded-lg shadow-sm capitalize"
+                    >
+                      <span className="font-semibold">{item.quantity}</span>{" "}
+                      {item.unit} - {item.ingredient} - ({item.grams} grams)
+                    </li>
+                  ))}
+                </ul>
+              }
+              <div className="mt-4">
+                <button
+                  className="btn btn-accent w-full"
+                  onClick={handleSaveRecipe}
+                >
+                  Save Recipe
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </>
   );

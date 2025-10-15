@@ -26,11 +26,11 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     path: "/user/convert-measurements",
     icon: <IconCalculator width="24" height="24" />,
   },
-  {
-    title: "Image Prediction",
-    path: "/user/predict/image",
-    icon: <IconCamera width="24" height="24" />,
-  },
+  // {
+  //   title: "Image Prediction",
+  //   path: "/user/predict/image",
+  //   icon: <IconCamera width="24" height="24" />,
+  // },
   {
     title: "Text Prediction",
     path: "/user/predict/text",

@@ -2,7 +2,7 @@
 
 const About = () => {
   return (
-    <div className="px-6 py-12 bg-base-100">
+    <div className="px-6 py-12 bg-base-100 h-[calc(100vh-5.6rem)]">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-primary">
           About Precision Baking

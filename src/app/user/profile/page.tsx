@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { IconCloudUpload } from "@tabler/icons-react";
 import { useUser } from "@/context/AuthProvider";
 import { User } from "@/types/user";
+import Title from "@/components/Title";
 
 const MyAccount = () => {
   const { user } = useUser();
@@ -52,108 +53,107 @@ const MyAccount = () => {
 
   return (
     <>
-      <h1 className="text-3xl font-bold mb-6 text-center uppercase">
-        My Account
-      </h1>
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Profile Card */}
-        <div className="bg-base-200 border border-base-content rounded-xl p-6 shadow">
-          <div className="flex flex-col items-center space-y-4">
-            <img
-              src={formData.profileImage}
-              alt={formData.name}
-              className="w-28 h-28 rounded-full object-cover"
-            />
-            <div className="text-center">
-              <h2 className="text-lg font-semibold">Profile Picture</h2>
-              <p className="text-sm text-base-content/60">JPG, Max 5MB</p>
-            </div>
-            <input
-              type="file"
-              id="profileImageInput"
-              className="hidden"
-              accept="image/*"
-              onChange={handleProfileImageChange}
-            />
-            <button
-              className="btn btn-primary btn-sm"
-              disabled={!editing}
-              onClick={() =>
-                document.getElementById("profileImageInput")?.click()
-              }
-            >
-              <IconCloudUpload size={18} className="mr-2" />
-              Upload Image
-            </button>
-          </div>
-        </div>
-
-        {/* Info Form */}
-        <div className="xl:col-span-2 bg-base-200 border border-base-content rounded-xl p-6 shadow space-y-6">
-          <h2 className="text-xl font-semibold">General Information</h2>
-
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="label label-text">
-                Name <span className="text-error">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.name || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                disabled={!editing}
-                className="input input-bordered w-full"
-                required
+      <Title title="My Account" />
+      <div className="px-10">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          {/* Profile Card */}
+          <div className="bg-base-200 border border-base-content rounded-xl p-6 shadow">
+            <div className="flex flex-col items-center space-y-4">
+              <img
+                src={formData.profileImage}
+                alt={formData.name}
+                className="w-28 h-28 rounded-full object-cover"
               />
-            </div>
-            <div>
-              <label className="label label-text">
-                Mobile Number <span className="text-error">*</span>
-              </label>
+              <div className="text-center">
+                <h2 className="text-lg font-semibold">Profile Picture</h2>
+                <p className="text-sm text-base-content/60">JPG, Max 5MB</p>
+              </div>
               <input
-                type="tel"
-                value={formData.contact || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, contact: e.target.value })
-                }
-                disabled={!editing}
-                className="input input-bordered w-full"
-                required
+                type="file"
+                id="profileImageInput"
+                className="hidden"
+                accept="image/*"
+                onChange={handleProfileImageChange}
               />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="label label-text">
-                Email <span className="text-error">*</span>
-              </label>
-              <input
-                type="email"
-                value={formData.email || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                disabled={!editing}
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="pt-4">
-            {editing ? (
-              <button className="btn btn-success w-full" onClick={handleSave}>
-                Save Changes
-              </button>
-            ) : (
               <button
-                className="btn btn-accent w-full"
-                onClick={() => setEditing(true)}
+                className="btn btn-primary btn-sm"
+                disabled={!editing}
+                onClick={() =>
+                  document.getElementById("profileImageInput")?.click()
+                }
               >
-                Edit Profile
+                <IconCloudUpload size={18} className="mr-2" />
+                Upload Image
               </button>
-            )}
+            </div>
+          </div>
+
+          {/* Info Form */}
+          <div className="xl:col-span-2 bg-base-200 border border-base-content rounded-xl p-6 shadow space-y-6">
+            <h2 className="text-xl font-semibold">General Information</h2>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="label label-text">
+                  Name <span className="text-error">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.name || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  disabled={!editing}
+                  className="input input-bordered w-full"
+                  required
+                />
+              </div>
+              <div>
+                <label className="label label-text">
+                  Mobile Number <span className="text-error">*</span>
+                </label>
+                <input
+                  type="tel"
+                  value={formData.contact || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, contact: e.target.value })
+                  }
+                  disabled={!editing}
+                  className="input input-bordered w-full"
+                  required
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="label label-text">
+                  Email <span className="text-error">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={formData.email || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  disabled={!editing}
+                  className="input input-bordered w-full"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="pt-4">
+              {editing ? (
+                <button className="btn btn-success w-full" onClick={handleSave}>
+                  Save Changes
+                </button>
+              ) : (
+                <button
+                  className="btn btn-accent w-full"
+                  onClick={() => setEditing(true)}
+                >
+                  Edit Profile
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
